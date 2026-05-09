@@ -16,7 +16,7 @@ public class LoginForm extends JFrame {
     JButton btnLogin, btnRegister;
 
     public LoginForm() {
-
+        setVisible(true);
         setTitle("Student Task Manager - Login");
         setSize(400, 300);
         setLocationRelativeTo(null);

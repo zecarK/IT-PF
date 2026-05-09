@@ -6,13 +6,17 @@ public class User {
     private String fullName;
     private String username;
     private String password;
+    private byte[] profilePicture;
+    private String gender;
 
     public User() {}
 
-    public User(String fullName, String username, String password) {
+    public User(String fullName, String username, String password, byte[] profilePicture, String gender) {
         this.fullName = fullName;
         this.username = username;
         this.password = password;
+        this.profilePicture = profilePicture;
+        this.gender = gender;
     }
 
     public int getUserId() {
@@ -45,5 +49,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+    
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+    
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

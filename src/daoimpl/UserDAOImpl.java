@@ -13,7 +13,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean registerUser(User user) {
 
-        String sql = "INSERT INTO users(full_name, username, password) VALUES(?,?,?)";
+        String sql = "INSERT INTO users(full_name, username, password, profile_picture, sex) VALUES(?,?,?,?,?)";
 
         try {
             PreparedStatement pst = con.prepareStatement(sql);
@@ -21,6 +21,8 @@ public class UserDAOImpl implements UserDAO {
             pst.setString(1, user.getFullName());
             pst.setString(2, user.getUsername());
             pst.setString(3, user.getPassword());
+            pst.setBytes(4, user.getProfilePicture());
+            pst.setString(5, user.getGender());
 
             return pst.executeUpdate() > 0;
 
@@ -48,6 +50,11 @@ public class UserDAOImpl implements UserDAO {
                 user.setUserId(rs.getInt("user_id"));
                 user.setFullName(rs.getString("full_name"));
                 user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setGender(rs.getString("sex"));
+                user.setProfilePicture(
+                    rs.getBytes("profile_picture")
+            );
                 return user;
             }
 

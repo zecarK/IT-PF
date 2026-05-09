@@ -4,6 +4,8 @@ import database.DBConnection;
 import model.User;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.*;
 
@@ -13,16 +15,16 @@ public class TaskPanel extends JPanel {
     JTextArea txtDescription;
 
     JComboBox<String> cmbStatus;
-
-    JCheckBox chkFinished;
+    JComboBox<String> cmbUrgency;
 
     JButton btnAdd;
     JButton btnList;
     JButton btnUpdate;
+    JButton btnDelete;
 
-    JList<String> taskList;
+    JTable taskTable;
 
-    DefaultListModel<String> model;
+    DefaultTableModel model;
 
     Connection con = DBConnection.getConnection();
 
@@ -38,17 +40,26 @@ public class TaskPanel extends JPanel {
         form.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
         txtTitle = new JTextField();
-        txtDescription = new JTextArea();
 
-        cmbStatus = new JComboBox<>(new String[]{"Pending", "Completed"});
+        txtDescription = new JTextArea(3,20);
 
-        // UNIT 2
-        // JCheckBox
-        chkFinished = new JCheckBox("Finished?");
+        cmbStatus = new JComboBox<>(
+                new String[]{"Pending", "Completed"}
+        );
+
+        // Urgency ComboBox
+        cmbUrgency = new JComboBox<>(
+                new String[]{
+                        "Most important",
+                        "Important",
+                        "Least important"
+                }
+        );
 
         btnAdd = new JButton("Add Task");
         btnList = new JButton("List Tasks");
-        btnUpdate = new JButton("Update Tasks");
+        btnUpdate = new JButton("Update Task");
+        btnDelete = new JButton("Delete Task");
 
         form.add(new JLabel("Title"));
         form.add(txtTitle);
@@ -59,118 +70,370 @@ public class TaskPanel extends JPanel {
         form.add(new JLabel("Status"));
         form.add(cmbStatus);
 
-        form.add(chkFinished);
-        form.add(new JLabel(""));
+        form.add(new JLabel("Urgency"));
+        form.add(cmbUrgency);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
+
         buttonPanel.add(btnAdd);
         buttonPanel.add(btnList);
         buttonPanel.add(btnUpdate);
+        buttonPanel.add(btnDelete);
 
         form.add(buttonPanel);
 
         add(form, BorderLayout.NORTH);
 
-        // UNIT 2 - JList with DefaultListModel
-        model = new DefaultListModel<>();
-        taskList = new JList<>(model);
-        taskList.setBorder(BorderFactory.createTitledBorder("Task List"));
+        // JTable
+        String[] columns = {
+                "Task ID",
+                "Title",
+                "Description",
+                "Status",
+                "Urgency"
+        };
 
-        add(new JScrollPane(taskList), BorderLayout.CENTER);
+        model = new DefaultTableModel(columns,0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
-        // UNIT 3 - Event Handling using Lambda Expressions
+        taskTable = new JTable(model);
+
+        // Set row height
+        taskTable.setRowHeight(30);
+
+        // Set column widths
+        taskTable.getColumnModel().getColumn(0).setPreferredWidth(60);
+        taskTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+        taskTable.getColumnModel().getColumn(2).setPreferredWidth(300);
+        taskTable.getColumnModel().getColumn(3).setPreferredWidth(100);
+        taskTable.getColumnModel().getColumn(4).setPreferredWidth(150);
+
+        // Renderer for urgency colors
+        taskTable.getColumnModel().getColumn(4)
+                .setCellRenderer(new DefaultTableCellRenderer() {
+
+            @Override
+            public Component getTableCellRendererComponent(
+                    JTable table,
+                    Object value,
+                    boolean isSelected,
+                    boolean hasFocus,
+                    int row,
+                    int column) {
+
+                Component c = super.getTableCellRendererComponent(
+                        table,
+                        value,
+                        isSelected,
+                        hasFocus,
+                        row,
+                        column
+                );
+
+                String urgency = value.toString();
+
+                if(urgency.equals("Most important")) {
+                    c.setBackground(Color.RED);
+                    c.setForeground(Color.WHITE);
+
+                } else if(urgency.equals("Important")) {
+                    c.setBackground(Color.BLUE);
+                    c.setForeground(Color.WHITE);
+
+                } else {
+                    c.setBackground(Color.GREEN);
+                    c.setForeground(Color.BLACK);
+                }
+
+                return c;
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(taskTable);
+
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Event Handling
         btnAdd.addActionListener(e -> addTask());
         btnList.addActionListener(e -> listTasks());
         btnUpdate.addActionListener(e -> updateTask());
+        btnDelete.addActionListener(e -> deleteTask());
+        
+        taskTable.getSelectionModel().addListSelectionListener(e -> {
+
+        int selectedRow = taskTable.getSelectedRow();
+
+        if(selectedRow != -1) {
+
+        txtTitle.setText(
+                model.getValueAt(selectedRow, 1).toString()
+        );
+
+        txtDescription.setText(
+                model.getValueAt(selectedRow, 2).toString()
+        );
+
+        cmbStatus.setSelectedItem(
+                model.getValueAt(selectedRow, 3).toString()
+        );
+
+        cmbUrgency.setSelectedItem(
+                model.getValueAt(selectedRow, 4).toString()
+        );
+    }
+});
+
+        listTasks();
     }
 
     private void addTask() {
+
         String title = txtTitle.getText();
+
         String description = txtDescription.getText();
+
         String status = (String) cmbStatus.getSelectedItem();
 
+        String urgency = (String) cmbUrgency.getSelectedItem();
+
         if(title.isEmpty() || description.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill in all fields", "Error", JOptionPane.ERROR_MESSAGE);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please fill in all fields",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
             return;
         }
 
         try {
-            String sql = "INSERT INTO tasks(user_id, title, description, status) VALUES(?,?,?,?)";
+
+            String sql =
+                    "INSERT INTO tasks(user_id, title, description, status, urgency) " +
+                    "VALUES(?,?,?,?,?)";
+
             PreparedStatement pst = con.prepareStatement(sql);
 
             pst.setInt(1, currentUser.getUserId());
             pst.setString(2, title);
             pst.setString(3, description);
             pst.setString(4, status);
+            pst.setString(5, urgency);
 
             if(pst.executeUpdate() > 0) {
-                JOptionPane.showMessageDialog(this, "Task added successfully");
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Task added successfully"
+                );
+
                 clearForm();
+
                 listTasks();
             }
 
         } catch(SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
     private void listTasks() {
-        model.clear();
+
+        model.setRowCount(0);
 
         try {
+
             String sql = "SELECT * FROM tasks WHERE user_id = ?";
+
             PreparedStatement pst = con.prepareStatement(sql);
+
             pst.setInt(1, currentUser.getUserId());
 
             ResultSet rs = pst.executeQuery();
 
             while(rs.next()) {
-                String taskInfo = "ID: " + rs.getInt("task_id") + " | " +
-                                  rs.getString("title") + " | " +
-                                  rs.getString("status");
-                model.addElement(taskInfo);
+
+                model.addRow(new Object[]{
+                        rs.getInt("task_id"),
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getString("status"),
+                        rs.getString("urgency")
+                });
             }
 
         } catch(SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
     private void updateTask() {
-        int selectedIndex = taskList.getSelectedIndex();
 
-        if(selectedIndex == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a task", "Error", JOptionPane.ERROR_MESSAGE);
+         int selectedRow = taskTable.getSelectedRow();
+
+    if(selectedRow == -1) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Please select a task",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+        );
+
+        return;
+    }
+
+    // Get task ID
+    int taskId = (int) model.getValueAt(selectedRow, 0);
+
+    // Get updated values from form
+    String title = txtTitle.getText();
+
+    String description = txtDescription.getText();
+
+    String status = (String) cmbStatus.getSelectedItem();
+
+    String urgency = (String) cmbUrgency.getSelectedItem();
+
+    // Validation
+    if(title.isEmpty() || description.isEmpty()) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Please fill in all fields",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+        );
+
+        return;
+    }
+
+    try {
+
+        String sql =
+                "UPDATE tasks " +
+                "SET title=?, description=?, status=?, urgency=? " +
+                "WHERE task_id=?";
+
+        PreparedStatement pst = con.prepareStatement(sql);
+
+        pst.setString(1, title);
+
+        pst.setString(2, description);
+
+        pst.setString(3, status);
+
+        pst.setString(4, urgency);
+
+        pst.setInt(5, taskId);
+
+        if(pst.executeUpdate() > 0) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Task updated successfully"
+            );
+
+            clearForm();
+
+            listTasks();
+        }
+
+    } catch(SQLException ex) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Error: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+        );
+    }
+    }
+
+    private void deleteTask() {
+
+        int selectedRow = taskTable.getSelectedRow();
+
+        if(selectedRow == -1) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please select a task",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
             return;
         }
 
-        String status = (String) cmbStatus.getSelectedItem();
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Delete this task?",
+                "Confirm",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if(confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        int taskId = (int) model.getValueAt(selectedRow, 0);
 
         try {
-            String taskInfo = model.getElementAt(selectedIndex);
-            String taskIdStr = taskInfo.split(" ")[1];
-            int taskId = Integer.parseInt(taskIdStr);
 
-            String sql = "UPDATE tasks SET status = ? WHERE task_id = ?";
+            String sql = "DELETE FROM tasks WHERE task_id = ?";
+
             PreparedStatement pst = con.prepareStatement(sql);
 
-            pst.setString(1, status);
-            pst.setInt(2, taskId);
+            pst.setInt(1, taskId);
 
             if(pst.executeUpdate() > 0) {
-                JOptionPane.showMessageDialog(this, "Task updated successfully");
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Task deleted successfully"
+                );
+
                 listTasks();
             }
 
         } catch(SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
     private void clearForm() {
+
         txtTitle.setText("");
+
         txtDescription.setText("");
+
         cmbStatus.setSelectedIndex(0);
-        chkFinished.setSelected(false);
+
+        cmbUrgency.setSelectedIndex(0);
     }
 }

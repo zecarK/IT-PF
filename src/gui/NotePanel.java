@@ -4,6 +4,8 @@ import model.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,7 +13,7 @@ import java.nio.file.Paths;
 
 public class NotePanel extends JPanel {
 
-    // UNIT 2 - GUI components (JTextArea, JTextField, JButton, JScrollPane)
+    // UNIT 2 - GUI components
     JTextField txtTitle;
     JTextArea txtContent;
 
@@ -25,10 +27,11 @@ public class NotePanel extends JPanel {
 
         this.currentUser = user;
 
-        // UNIT 2 - Layout Manager (BorderLayout)
+        // UNIT 2 - Layout Manager
         setLayout(new BorderLayout(10,10));
 
         txtTitle = new JTextField();
+
         txtContent = new JTextArea();
 
         btnSaveFile = new JButton("Save Note");
@@ -37,12 +40,14 @@ public class NotePanel extends JPanel {
 
         // TOP PANEL
         JPanel topPanel = new JPanel(new BorderLayout());
+
         topPanel.add(new JLabel("Title:"), BorderLayout.WEST);
+
         topPanel.add(txtTitle, BorderLayout.CENTER);
 
         add(topPanel, BorderLayout.NORTH);
 
-        // CENTER (UNIT 2 - JScrollPane + JTextArea)
+        // CENTER
         add(new JScrollPane(txtContent), BorderLayout.CENTER);
 
         // BOTTOM PANEL
@@ -54,21 +59,65 @@ public class NotePanel extends JPanel {
 
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // UNIT 3 - Event Handling using Lambda Expressions
+        // Button Events
         btnSaveFile.addActionListener(e -> saveNote());
+
         btnOpenFile.addActionListener(e -> openNote());
-        btnClear.addActionListener(e -> txtContent.setText(""));
+
+        btnClear.addActionListener(e -> {
+            txtTitle.setText("");
+            txtContent.setText("");
+        });
+
+        // ============================
+        // Keyboard Accelerators
+        // ============================
+
+        // CTRL + S
+        KeyStroke saveKey = KeyStroke.getKeyStroke(
+                KeyEvent.VK_S,
+                InputEvent.CTRL_DOWN_MASK
+        );
+
+        // CTRL + O
+        KeyStroke openKey = KeyStroke.getKeyStroke(
+                KeyEvent.VK_O,
+                InputEvent.CTRL_DOWN_MASK
+        );
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(saveKey, "saveNote");
+
+        getActionMap().put("saveNote",
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(java.awt.event.ActionEvent e) {
+                        saveNote();
+                    }
+                });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(openKey, "openNote");
+
+        getActionMap().put("openNote",
+                new AbstractAction() {
+                    @Override
+                    public void actionPerformed(java.awt.event.ActionEvent e) {
+                        openNote();
+                    }
+                });
     }
 
-    // UNIT 6 - File Handling (Character Streams + BufferedWriter + FileWriter)
+    // UNIT 6 - File Handling
     private void saveNote() {
 
         try {
 
             JFileChooser chooser = new JFileChooser();
+
             int option = chooser.showSaveDialog(this);
 
-            if (option == JFileChooser.APPROVE_OPTION) {
+            if(option == JFileChooser.APPROVE_OPTION) {
 
                 File file = chooser.getSelectedFile();
 
@@ -76,52 +125,71 @@ public class NotePanel extends JPanel {
                         new FileWriter(file + ".txt")
                 );
 
-                writer.write("TITLE: " + txtTitle.getText() + "\n\n");
                 writer.write(txtContent.getText());
 
                 writer.close();
 
-                JOptionPane.showMessageDialog(this,
-                        "Note saved successfully");
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Note saved successfully"
+                );
             }
 
-        } catch (IOException e) {
+        } catch(IOException e) {
 
-            // UNIT 5 - Exception Handling (try-catch-finally concept)
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(
+                    this,
                     "Error saving file: " + e.getMessage(),
                     "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
-    // UNIT 6 - File Handling (BufferedReader + FileReader + Path/NIO)
+    // UNIT 6 - File Handling
     private void openNote() {
 
         try {
 
             JFileChooser chooser = new JFileChooser();
+
             int option = chooser.showOpenDialog(this);
 
-            if (option == JFileChooser.APPROVE_OPTION) {
+            if(option == JFileChooser.APPROVE_OPTION) {
 
                 File file = chooser.getSelectedFile();
 
+                // Put filename in title field
+                String fileName = file.getName();
+
+                // Remove .txt extension
+                if(fileName.endsWith(".txt")) {
+                    fileName = fileName.substring(
+                            0,
+                            fileName.length() - 4
+                    );
+                }
+
+                txtTitle.setText(fileName);
+
                 Path path = Paths.get(file.getAbsolutePath());
 
-                // UNIT 6 - java.nio.file.Files
-                String content = new String(Files.readAllBytes(path));
-                txtContent.setText(content);
+                String content = new String(
+                        Files.readAllBytes(path)
+                );
 
+                // Put file content in content area
                 txtContent.setText(content);
             }
 
-        } catch (IOException e) {
+        } catch(IOException e) {
 
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(
+                    this,
                     "Error opening file: " + e.getMessage(),
                     "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 }
