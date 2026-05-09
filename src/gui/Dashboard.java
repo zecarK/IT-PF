@@ -26,9 +26,12 @@ public class Dashboard extends JFrame {
 
         JMenu menuFile = new JMenu("Account");
         JMenuItem itemLogout = new JMenuItem("Logout");
+        JMenuItem itemNewAcc = new JMenuItem("Add new account");
 
         menuFile.add(itemLogout);
+        menuFile.add(itemNewAcc);
         menuBar.add(menuFile);
+        
 
         setJMenuBar(menuBar);
 
@@ -38,7 +41,7 @@ public class Dashboard extends JFrame {
 
         tabs.add("Tasks", new TaskPanel(currentUser));
         tabs.add("Notes", new NotePanel(currentUser));
-        tabs.add("Student Tools", new StudentToolPanel(currentUser));
+        tabs.add("Account Setting", new StudentToolPanel(currentUser));
 
         add(tabs, BorderLayout.CENTER);
 
