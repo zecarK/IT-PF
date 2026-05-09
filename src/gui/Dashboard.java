@@ -24,7 +24,7 @@ public class Dashboard extends JFrame {
         // Menu Bar
         menuBar = new JMenuBar();
 
-        JMenu menuFile = new JMenu("File");
+        JMenu menuFile = new JMenu("Account");
         JMenuItem itemLogout = new JMenuItem("Logout");
 
         menuFile.add(itemLogout);
