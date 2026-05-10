@@ -18,7 +18,6 @@ public class TaskPanel extends JPanel {
     JComboBox<String> cmbUrgency;
 
     JButton btnAdd;
-    JButton btnList;
     JButton btnUpdate;
     JButton btnDelete;
 
@@ -34,160 +33,209 @@ public class TaskPanel extends JPanel {
 
         this.currentUser = user;
 
-        setLayout(new BorderLayout());
+    // Fonts
+    Font labelFont = new Font("Arial", Font.BOLD, 18);
+    Font textFont = new Font("Arial", Font.PLAIN, 18);
+    Font buttonFont = new Font("Arial", Font.BOLD, 18);
 
-        JPanel form = new JPanel(new GridLayout(6,2,10,10));
-        form.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+    setLayout(new BorderLayout());
+    setBackground(Color.WHITE);
 
-        txtTitle = new JTextField();
+    JPanel form = new JPanel(new GridLayout(5,2,10,10));
+    form.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+    form.setBackground(Color.WHITE);
 
-        txtDescription = new JTextArea(3,20);
+    txtTitle = new JTextField();
+    txtTitle.setFont(textFont);
 
-        cmbStatus = new JComboBox<>(
-                new String[]{"Pending", "Completed"}
-        );
+    txtDescription = new JTextArea(3,20);
+    txtDescription.setFont(textFont);
 
-        // Urgency ComboBox
-        cmbUrgency = new JComboBox<>(
-                new String[]{
-                        "Most important",
-                        "Important",
-                        "Least important"
-                }
-        );
+    cmbStatus = new JComboBox<>(
+            new String[]{"Pending", "Completed"}
+    );
+    cmbStatus.setFont(textFont);
 
-        btnAdd = new JButton("Add Task");
-        btnList = new JButton("List Tasks");
-        btnUpdate = new JButton("Update Task");
-        btnDelete = new JButton("Delete Task");
-
-        form.add(new JLabel("Title"));
-        form.add(txtTitle);
-
-        form.add(new JLabel("Description"));
-        form.add(new JScrollPane(txtDescription));
-
-        form.add(new JLabel("Status"));
-        form.add(cmbStatus);
-
-        form.add(new JLabel("Urgency"));
-        form.add(cmbUrgency);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-
-        buttonPanel.add(btnAdd);
-        buttonPanel.add(btnList);
-        buttonPanel.add(btnUpdate);
-        buttonPanel.add(btnDelete);
-
-        form.add(buttonPanel);
-
-        add(form, BorderLayout.NORTH);
-
-        // JTable
-        String[] columns = {
-                "Task ID",
-                "Title",
-                "Description",
-                "Status",
-                "Urgency"
-        };
-
-        model = new DefaultTableModel(columns,0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
+    cmbUrgency = new JComboBox<>(
+            new String[]{
+                    "Most important",
+                    "Important",
+                    "Least important"
             }
-        };
+    );
+    cmbUrgency.setFont(textFont);
 
-        taskTable = new JTable(model);
+    btnAdd = new JButton("Add Task");
+    btnUpdate = new JButton("Update Task");
+    btnDelete = new JButton("Delete Task");
 
-        // Set row height
-        taskTable.setRowHeight(30);
+    // Button Styling
+    JButton[] buttons = {
+            btnAdd,
+            btnUpdate,
+            btnDelete
+    };
 
-        // Set column widths
-        taskTable.getColumnModel().getColumn(0).setPreferredWidth(60);
-        taskTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-        taskTable.getColumnModel().getColumn(2).setPreferredWidth(300);
-        taskTable.getColumnModel().getColumn(3).setPreferredWidth(100);
-        taskTable.getColumnModel().getColumn(4).setPreferredWidth(150);
+    for(JButton btn : buttons) {
 
-        // Renderer for urgency colors
-        taskTable.getColumnModel().getColumn(4)
-                .setCellRenderer(new DefaultTableCellRenderer() {
+        btn.setFont(buttonFont);
 
-            @Override
-            public Component getTableCellRendererComponent(
-                    JTable table,
-                    Object value,
-                    boolean isSelected,
-                    boolean hasFocus,
-                    int row,
-                    int column) {
+        btn.setBackground(new Color(204,255,255));
 
-                Component c = super.getTableCellRendererComponent(
-                        table,
-                        value,
-                        isSelected,
-                        hasFocus,
-                        row,
-                        column
-                );
+        btn.setPreferredSize(new Dimension(145,35));
+    }
 
-                String urgency = value.toString();
+    // Labels
+    JLabel lblTitle = new JLabel("Title");
+    lblTitle.setFont(labelFont);
 
-                if(urgency.equals("Most important")) {
-                    c.setBackground(Color.RED);
-                    c.setForeground(Color.WHITE);
+    JLabel lblDescription = new JLabel("Description");
+    lblDescription.setFont(labelFont);
 
-                } else if(urgency.equals("Important")) {
-                    c.setBackground(Color.BLUE);
-                    c.setForeground(Color.WHITE);
+    JLabel lblStatus = new JLabel("Status");
+    lblStatus.setFont(labelFont);
 
-                } else {
-                    c.setBackground(Color.GREEN);
-                    c.setForeground(Color.BLACK);
-                }
+    JLabel lblUrgency = new JLabel("Urgency");
+    lblUrgency.setFont(labelFont);
 
-                return c;
+    form.add(lblTitle);
+    form.add(txtTitle);
+
+    form.add(lblDescription);
+    form.add(new JScrollPane(txtDescription));
+
+    form.add(lblStatus);
+    form.add(cmbStatus);
+
+    form.add(lblUrgency);
+    form.add(cmbUrgency);
+
+    JPanel buttonPanel = new JPanel(new FlowLayout());
+    buttonPanel.setBackground(Color.WHITE);
+
+    buttonPanel.add(btnAdd);
+    buttonPanel.add(btnUpdate);
+    buttonPanel.add(btnDelete);
+
+    form.add(buttonPanel);
+
+    add(form, BorderLayout.NORTH);
+
+    // JTable
+    String[] columns = {
+            "Task ID",
+            "Title",
+            "Description",
+            "Status",
+            "Urgency"
+    };
+
+    model = new DefaultTableModel(columns,0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+
+    taskTable = new JTable(model);
+
+    // Table Fonts
+    taskTable.setFont(new Font("Arial", Font.PLAIN, 18));
+
+    taskTable.getTableHeader().setFont(
+            new Font("Arial", Font.BOLD, 18)
+    );
+
+    // Row height
+    taskTable.setRowHeight(35);
+
+    // Set column widths
+    taskTable.getColumnModel().getColumn(0).setPreferredWidth(60);
+    taskTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+    taskTable.getColumnModel().getColumn(2).setPreferredWidth(300);
+    taskTable.getColumnModel().getColumn(3).setPreferredWidth(100);
+    taskTable.getColumnModel().getColumn(4).setPreferredWidth(150);
+
+    // Renderer for urgency colors
+    taskTable.getColumnModel().getColumn(4)
+            .setCellRenderer(new DefaultTableCellRenderer() {
+
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int column) {
+
+            Component c = super.getTableCellRendererComponent(
+                    table,
+                    value,
+                    isSelected,
+                    hasFocus,
+                    row,
+                    column
+            );
+
+            c.setFont(new Font("Arial", Font.PLAIN, 18));
+
+            String urgency = value.toString();
+
+            if(urgency.equals("Most important")) {
+
+                c.setBackground(Color.RED);
+                c.setForeground(Color.WHITE);
+
+            } else if(urgency.equals("Important")) {
+
+                c.setBackground(Color.BLUE);
+                c.setForeground(Color.WHITE);
+
+            } else {
+
+                c.setBackground(Color.GREEN);
+                c.setForeground(Color.BLACK);
             }
-        });
 
-        JScrollPane scrollPane = new JScrollPane(taskTable);
+            return c;
+        }
+    });
 
-        add(scrollPane, BorderLayout.CENTER);
+    JScrollPane scrollPane = new JScrollPane(taskTable);
 
-        // Event Handling
-        btnAdd.addActionListener(e -> addTask());
-        btnList.addActionListener(e -> listTasks());
-        btnUpdate.addActionListener(e -> updateTask());
-        btnDelete.addActionListener(e -> deleteTask());
-        
-        taskTable.getSelectionModel().addListSelectionListener(e -> {
+    add(scrollPane, BorderLayout.CENTER);
+
+    // Event Handling
+    btnAdd.addActionListener(e -> addTask());
+    btnUpdate.addActionListener(e -> updateTask());
+    btnDelete.addActionListener(e -> deleteTask());
+
+    taskTable.getSelectionModel().addListSelectionListener(e -> {
 
         int selectedRow = taskTable.getSelectedRow();
 
         if(selectedRow != -1) {
 
-        txtTitle.setText(
-                model.getValueAt(selectedRow, 1).toString()
-        );
+            txtTitle.setText(
+                    model.getValueAt(selectedRow, 1).toString()
+            );
 
-        txtDescription.setText(
-                model.getValueAt(selectedRow, 2).toString()
-        );
+            txtDescription.setText(
+                    model.getValueAt(selectedRow, 2).toString()
+            );
 
-        cmbStatus.setSelectedItem(
-                model.getValueAt(selectedRow, 3).toString()
-        );
+            cmbStatus.setSelectedItem(
+                    model.getValueAt(selectedRow, 3).toString()
+            );
 
-        cmbUrgency.setSelectedItem(
-                model.getValueAt(selectedRow, 4).toString()
-        );
-    }
-});
+            cmbUrgency.setSelectedItem(
+                    model.getValueAt(selectedRow, 4).toString()
+            );
+        }
+    });
 
-        listTasks();
+    listTasks();
     }
 
     private void addTask() {

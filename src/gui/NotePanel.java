@@ -29,19 +29,39 @@ public class NotePanel extends JPanel {
 
         // UNIT 2 - Layout Manager
         setLayout(new BorderLayout(10,10));
-
+        
+        Font labelFont = new Font("Arial", Font.BOLD, 18);
+        Font buttonFont = new Font("Arial", Font.BOLD, 18);
         txtTitle = new JTextField();
 
         txtContent = new JTextArea();
-
+        
         btnSaveFile = new JButton("Save Note");
+        btnSaveFile.setFont(buttonFont);
         btnOpenFile = new JButton("Open Note");
+        btnOpenFile.setFont(buttonFont);
         btnClear = new JButton("Clear");
+        btnClear.setFont(buttonFont);
+        
+        JButton[] buttons = {
+            btnSaveFile,
+            btnOpenFile,
+            btnClear
+    };
 
+    for(JButton btn : buttons) {
+
+        btn.setFont(buttonFont);
+
+        btn.setBackground(new Color(204,255,255));
+
+        btn.setPreferredSize(new Dimension(145,35));
+    }
         // TOP PANEL
         JPanel topPanel = new JPanel(new BorderLayout());
-
-        topPanel.add(new JLabel("Title:"), BorderLayout.WEST);
+        JLabel titleLabel = new JLabel("Title: ");
+        titleLabel.setFont(labelFont);
+        topPanel.add(titleLabel, BorderLayout.WEST);
 
         topPanel.add(txtTitle, BorderLayout.CENTER);
 

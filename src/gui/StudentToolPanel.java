@@ -125,22 +125,38 @@ public class StudentToolPanel extends JPanel {
         }
 
         
-
-        panel.add(new JLabel("Full Name"));
+        JLabel nameLabel = new JLabel("Full Name:");
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        nameLabel.setPreferredSize(new Dimension(200,25));
+        panel.add(nameLabel);
+        txtName.setFont(new Font("Arial", Font.PLAIN, 18));
         panel.add(txtName);
-
-        panel.add(new JLabel("Username"));
+        
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        usernameLabel.setPreferredSize(new Dimension(200,25));
+        panel.add(usernameLabel);
+        txtUsername.setFont(new Font("Arial", Font.PLAIN, 18));
         panel.add(txtUsername);
-
-        panel.add(new JLabel("Password"));
+        
+        JLabel passLabel = new JLabel("Password:");
+        passLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        passLabel.setPreferredSize(new Dimension(200,25));
+        panel.add(passLabel);
+        txtPassword.setFont(new Font("Arial", Font.PLAIN, 18));
         panel.add(txtPassword);
-
-        panel.add(new JLabel("Sex"));
+        
+        JLabel sexLabel = new JLabel("Password:");
+        sexLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        sexLabel.setPreferredSize(new Dimension(200,25));
+        panel.add(sexLabel);
 
         JPanel sexPanel = new JPanel(
                 new FlowLayout(FlowLayout.LEFT)
         );
-
+        rbMale.setFont(new Font("Arial", Font.BOLD, 18));
+        rbFemale.setFont(new Font("Arial", Font.BOLD, 18));
+        rbOthers.setFont(new Font("Arial", Font.BOLD, 18));
         sexPanel.add(rbMale);
         sexPanel.add(rbFemale);
         sexPanel.add(rbOthers);
@@ -149,46 +165,46 @@ public class StudentToolPanel extends JPanel {
 
         // Image Panel
         JPanel imagePanel = new JPanel(
-                new FlowLayout(FlowLayout.CENTER)
+                new FlowLayout(FlowLayout.RIGHT)
         );
 
         JLabel imageLabel = new JLabel("Profile Picture:");
-        imageLabel.setBounds(40, 300, 25, 25);
+        imageLabel.setBounds(40, 300, 200, 35);
+        imageLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        parentPanel.add(imageLabel);
 
-        imagePanel.add(
-                new JLabel(
-                        "                                         "
-                )
-        );
-        imagePanel.add(
-                new JLabel(
-                        "                                         "
-                )
-        );
-        imagePanel.add(
-                new JLabel(
-                        "                                         "
-                )
-        );
+        
 
         imagePanel.add(lblProfile);
-
+        btnUpload.setFont(new Font("Arial", Font.BOLD, 18));
+        btnUpload.setPreferredSize(new Dimension(100,35));
+        btnUpload.setBackground(new Color(204,255,255));
         imagePanel.add(btnUpload);
+        imagePanel.add(new JLabel("                 "));
+        imagePanel.add(new JLabel("                 "));
 
         // Button Panel
         JPanel buttonPanel = new JPanel(
                 new FlowLayout(FlowLayout.CENTER,10,10)
         );
-
+        btnEdit.setFont(new Font("Arial", Font.BOLD, 18));
+        btnEdit.setPreferredSize(new Dimension(100,35));
+        btnEdit.setBackground(new Color(204,255,255));
+        btnSave.setFont(new Font("Arial", Font.BOLD, 18));
+        btnSave.setPreferredSize(new Dimension(100,35));
+        btnSave.setBackground(new Color(204,255,255));
+        
         buttonPanel.add(btnEdit);
 
         buttonPanel.add(btnSave);
 
         // Add Child Panels
+        parentPanel.setBackground(Color.WHITE);
+        panel.setBackground(Color.WHITE);
         parentPanel.add(panel, BorderLayout.NORTH);
-
+        imagePanel.setBackground(Color.WHITE);
         parentPanel.add(imagePanel, BorderLayout.CENTER);
-
+        buttonPanel.setBackground(Color.WHITE);
         parentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(parentPanel);

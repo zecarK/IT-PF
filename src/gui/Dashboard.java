@@ -21,19 +21,21 @@ public class Dashboard extends JFrame {
         setSize(1000,700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        setBackground(Color.WHITE);
         // UNIT 4
         // Menu Bar
         menuBar = new JMenuBar();
+        menuBar.setBackground(Color.WHITE);
 
         JMenu menuFile = new JMenu("Account");
         menuFile.setMnemonic('A'); // Alt + A
 
         JMenuItem itemLogout = new JMenuItem("Logout");
         itemLogout.setMnemonic('L'); // Alt + L
-
+        itemLogout.setBackground(Color.WHITE);
         JMenuItem itemNewAcc = new JMenuItem("Add new account");
         itemNewAcc.setMnemonic('N'); // Alt + N
+        itemNewAcc.setBackground(Color.WHITE);
 
         menuFile.add(itemLogout);
         menuFile.add(itemNewAcc);
@@ -69,6 +71,7 @@ public class Dashboard extends JFrame {
         // UNIT 2
         // JTabbedPane + JPanel
         JTabbedPane tabs = new JTabbedPane();
+        tabs.setBackground(Color.WHITE);
 
         tabs.add("Tasks", new TaskPanel(currentUser));
         tabs.add("Notes", new NotePanel(currentUser));

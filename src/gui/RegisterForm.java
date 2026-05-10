@@ -29,34 +29,73 @@ public class RegisterForm extends JFrame implements ActionListener {
     public RegisterForm() {
 
         setTitle("Register Form");
-        setSize(550,500);
+        setSize(650,560);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
+        // Fonts
+        Font labelFont = new Font("Arial", Font.BOLD, 18);
+        Font textFont = new Font("Arial", Font.PLAIN, 18);
+        Font buttonFont = new Font("Arial", Font.BOLD, 18);
+        
         JPanel parentPanel = new JPanel(new BorderLayout(10, 10));
         parentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        parentPanel.setBackground(Color.WHITE);
         
         JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        panel.setBackground(Color.WHITE);
 
         txtName = new JTextField();
+        txtName.setFont(textFont);
+
         txtUsername = new JTextField();
+        txtUsername.setFont(textFont);
+
         txtPassword = new JPasswordField();
+        txtPassword.setFont(textFont);
 
         // UNIT 2
         // JRadioButton
         rbMale = new JRadioButton("Male");
+        rbMale.setFont(labelFont);
+        rbMale.setBackground(Color.WHITE);
+
         rbFemale = new JRadioButton("Female");
+        rbFemale.setFont(labelFont);
+        rbFemale.setBackground(Color.WHITE);
+
         rbOthers = new JRadioButton("Others");
+        rbOthers.setFont(labelFont);    
+        rbOthers.setBackground(Color.WHITE);
 
         ButtonGroup group = new ButtonGroup();
         group.add(rbMale);
         group.add(rbFemale);
         group.add(rbOthers);
+        
 
         btnRegister = new JButton("Create Account");
         btnBack = new JButton("Back");
         btnUpload = new JButton("Upload");
+        btnUpload.setBackground(new Color(204,255,255));
+        btnUpload.setFont(buttonFont);
+        btnUpload.setPreferredSize(new Dimension(100,35));
+
+        JButton[] buttons = {
+        btnRegister,
+        btnBack,
+        
+        };
+
+        for(JButton btn : buttons) {
+
+        btn.setFont(buttonFont);
+
+        btn.setBackground(new Color(204,255,255));
+
+        btn.setPreferredSize(new Dimension(190,35));
+    }
 
         // Profile picture label
         lblProfile = new JLabel();
@@ -65,36 +104,56 @@ public class RegisterForm extends JFrame implements ActionListener {
         lblProfile.setHorizontalAlignment(JLabel.CENTER);
         lblProfile.setText("No Image");
 
-        panel.add(new JLabel("Full Name"));
+        JLabel lblName = new JLabel("Full Name");
+        lblName.setFont(labelFont);
+
+        JLabel lblUsername = new JLabel("Username");
+        lblUsername.setFont(labelFont);
+
+        JLabel lblPassword = new JLabel("Password");
+        lblPassword.setFont(labelFont);
+
+        JLabel lblSex = new JLabel("Sex");
+        lblSex.setFont(labelFont);
+        
+        panel.add(lblName);
         panel.add(txtName);
 
-        panel.add(new JLabel("Username"));
+        panel.add(lblUsername);
         panel.add(txtUsername);
 
-        panel.add(new JLabel("Password"));
+        panel.add(lblPassword);
         panel.add(txtPassword);
 
-        panel.add(new JLabel("Sex"));
+        panel.add(lblSex);
 
         JPanel sexPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         sexPanel.add(rbMale);
         sexPanel.add(rbFemale);
         sexPanel.add(rbOthers);
-
+        sexPanel.setBackground(Color.WHITE);
         panel.add(sexPanel);
 
         // Profile picture section
-        JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        imagePanel.add(new JLabel("Profile Picture"));
-        imagePanel.add(new JLabel("                                         "));
+        JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel lblProfileTitle = new JLabel("Profile Picture");
+        lblProfileTitle.setBounds(40,300,200,25);
+        lblProfileTitle.setFont(labelFont);
+        lblProfile.setFont(labelFont);
+        imagePanel.setBackground(Color.WHITE);
+        parentPanel.add(lblProfileTitle);
+        
         imagePanel.add(lblProfile);
+        imagePanel.add(new JLabel("    "));
         imagePanel.add(btnUpload);
+        imagePanel.add(new JLabel("        "));
 
         panel.add(imagePanel);
         
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        buttonPanel.setBackground(Color.WHITE);
         buttonPanel.add(btnBack);
         buttonPanel.add(btnRegister);
 
